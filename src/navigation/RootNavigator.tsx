@@ -22,7 +22,7 @@ type TabsParamList = {
 };
 
 export type HomeStackParamList = {
-  Home:
+  HomeList:
     | { action?: "create" | "update"; payload?: Plant | PlantDraft }
     | undefined;
   PlantDetails: { plant?: Plant } | undefined;
@@ -36,7 +36,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator id="home-stack">
       <HomeStack.Screen
-        name="Home"
+        name="HomeList"
         component={HomeScreen}
         options={{ headerShown: false }}
       />

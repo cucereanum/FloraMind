@@ -62,7 +62,7 @@ export default function PlantDetailsScreen({
         waterAmount: waterAmount.trim() || undefined,
         waterDays,
       };
-      navigation.navigate("Home", { action: "update", payload });
+      navigation.navigate("HomeList", { action: "update", payload });
       return;
     }
 
@@ -75,7 +75,7 @@ export default function PlantDetailsScreen({
       waterDays,
       room: undefined,
     };
-    navigation.navigate("Home", { action: "create", payload });
+    navigation.navigate("HomeList", { action: "create", payload });
   };
 
   return (

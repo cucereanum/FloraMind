@@ -16,9 +16,9 @@ import { createPlant } from "../utils/plant";
 
 type HomeScreenNavigation = NativeStackNavigationProp<
   HomeStackParamList,
-  "Home"
+  "HomeList"
 >;
-type HomeRoute = RouteProp<HomeStackParamList, "Home">;
+type HomeRoute = RouteProp<HomeStackParamList, "HomeList">;
 
 export default function HomeScreen() {
   const [plants, setPlants] = useState<Plant[]>(() => loadPlants());
@@ -32,7 +32,7 @@ export default function HomeScreen() {
   }, [plants]);
 
   useEffect(() => {
-    const params = route.params as HomeStackParamList["Home"];
+    const params = route.params as HomeStackParamList["HomeList"];
     if (!params?.action || !params.payload) {
       return;
     }
