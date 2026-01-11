@@ -1,12 +1,15 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { useOnboarding } from '../hooks/useOnboarding';
-import HomeScreen from '../screens/HomeScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import { colors } from '../theme/colors';
+import { useOnboarding } from "../hooks/useOnboarding";
+import HomeScreen from "../screens/HomeScreen";
+import OnboardingScreen from "../screens/OnboardingScreen";
+import PlantDetailsScreen from "../screens/PlantDetailsScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import { colors } from "../theme/colors";
+import type { Plant, PlantDraft } from "../types";
 
 type RootStackParamList = {
   Onboarding: undefined;
@@ -18,8 +21,37 @@ type TabsParamList = {
   Settings: undefined;
 };
 
+export type HomeStackParamList = {
+  Home:
+    | { action?: "create" | "update"; payload?: Plant | PlantDraft }
+    | undefined;
+  PlantDetails: { plant?: Plant } | undefined;
+};
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator<TabsParamList>();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator id="home-stack">
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="PlantDetails"
+        component={PlantDetailsScreen}
+        options={{
+          title: "Plant details",
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+        }}
+      />
+    </HomeStack.Navigator>
+  );
+}
 
 function MainTabs() {
   return (
@@ -32,8 +64,25 @@ function MainTabs() {
         tabBarStyle: { backgroundColor: colors.surface },
       }}
     >
-      <Tabs.Screen name="Home" component={HomeScreen} options={{ title: 'My Plants' }} />
-      <Tabs.Screen name="Settings" component={SettingsScreen} />
+      <Tabs.Screen
+        name="Home"
+        component={HomeStackScreen}
+        options={{
+          title: "My Plants",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="leaf" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs.Navigator>
   );
 }

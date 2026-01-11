@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     ...typography.body,
-    color: colors.surface,
+    color: colors.text,
     fontWeight: '600',
   },
 });

@@ -1,105 +1,85 @@
-import { useMemo, useState } from 'react';
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { useEffect, useMemo, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import PlantCard from '../components/PlantCard';
-import { usePlants } from '../hooks/usePlants';
-import { colors } from '../theme/colors';
-import { spacing } from '../theme/spacing';
-import { typography } from '../theme/typography';
-import { PlantCategory } from '../types';
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import PlantCard from "../components/PlantCard";
+import { HomeStackParamList } from "../navigation/RootNavigator";
+import { loadPlants, savePlants } from "../storage/plants";
+import { colors } from "../theme/colors";
+import { spacing } from "../theme/spacing";
+import { typography } from "../theme/typography";
+import type { Plant, PlantDraft } from "../types";
+import { createPlant } from "../utils/plant";
+
+type HomeScreenNavigation = NativeStackNavigationProp<
+  HomeStackParamList,
+  "Home"
+>;
+type HomeRoute = RouteProp<HomeStackParamList, "Home">;
 
 export default function HomeScreen() {
-  const { plants, addPlant, completeTask } = usePlants();
-  const [name, setName] = useState('');
-  const [room, setRoom] = useState('');
-  const [category, setCategory] = useState<PlantCategory>('tropical');
+  const [plants, setPlants] = useState<Plant[]>(() => loadPlants());
+  const navigation = useNavigation<HomeScreenNavigation>();
+  const route = useRoute<HomeRoute>();
 
-  const canSubmit = name.trim().length > 0;
-  const orderedCategories = useMemo<PlantCategory[]>(
-    () => ['succulent', 'tropical', 'fern', 'herb', 'unknown'],
-    [],
-  );
+  const headerMeta = useMemo(() => `${plants.length} total`, [plants.length]);
 
-  const handleSubmit = () => {
-    if (!canSubmit) {
+  useEffect(() => {
+    savePlants(plants);
+  }, [plants]);
+
+  useEffect(() => {
+    const params = route.params as HomeStackParamList["Home"];
+    if (!params?.action || !params.payload) {
       return;
     }
-    addPlant(name, category, room);
-    setName('');
-    setRoom('');
-  };
+
+    if (params.action === "create") {
+      const draft = params.payload as PlantDraft;
+      const next = createPlant({
+        name: draft.name,
+        category: draft.category ?? "unknown",
+        description: draft.description,
+        room: draft.room,
+        photoUri: draft.photoUri,
+        waterAmount: draft.waterAmount,
+        waterDays: draft.waterDays,
+      });
+      setPlants((current) => [next, ...current]);
+    }
+
+    if (params.action === "update") {
+      const updated = params.payload as Plant;
+      setPlants((current) =>
+        current.map((plant) =>
+          plant.id === updated.id ? { ...plant, ...updated } : plant
+        )
+      );
+    }
+
+    navigation.setParams({ action: undefined, payload: undefined });
+  }, [navigation, route.params]);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-      >
+      <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>FloraMind</Text>
-          <Text style={styles.subtitle}>A calm shelf for your everyday plants.</Text>
-        </View>
-
-        <View style={styles.formCard}>
-          <Text style={styles.formTitle}>Quick add</Text>
-          <TextInput
-            placeholder="Plant name"
-            placeholderTextColor={colors.muted}
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            placeholder="Room (optional)"
-            placeholderTextColor={colors.muted}
-            style={styles.input}
-            value={room}
-            onChangeText={setRoom}
-          />
-          <View style={styles.categoryRow}>
-            {orderedCategories.map((item) => {
-              const isActive = category === item;
-              return (
-                <Pressable
-                  key={item}
-                  onPress={() => setCategory(item)}
-                  style={[styles.categoryChip, isActive && styles.categoryChipActive]}
-                >
-                  <Text style={[styles.categoryText, isActive && styles.categoryTextActive]}>
-                    {item}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <Pressable
-            style={[styles.submit, !canSubmit && styles.submitDisabled]}
-            onPress={handleSubmit}
-            disabled={!canSubmit}
-          >
-            <Text style={styles.submitText}>Add plant</Text>
-          </Pressable>
+          <Text style={styles.subtitle}>Your plants, calm and organized.</Text>
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Your plants</Text>
-          <Text style={styles.sectionMeta}>{plants.length} total</Text>
+          <Text style={styles.sectionTitle}>Plant shelf</Text>
+          <Text style={styles.sectionMeta}>{headerMeta}</Text>
         </View>
 
         {plants.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>No plants yet</Text>
-            <Text style={styles.emptyBody}>Add your first plant to start tracking.</Text>
+            <Text style={styles.emptyBody}>Tap + to add your first plant.</Text>
           </View>
         ) : (
           <FlatList
@@ -108,14 +88,23 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <PlantCard
                 plant={item}
-                onCompleteWater={(plantId) => completeTask(plantId, 'water')}
+                onPress={() =>
+                  navigation.navigate("PlantDetails", { plant: item })
+                }
               />
             )}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
         )}
-      </KeyboardAvoidingView>
+
+        <Pressable
+          style={styles.fab}
+          onPress={() => navigation.navigate("PlantDetails")}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -145,78 +134,11 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 15,
   },
-  formCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  formTitle: {
-    ...typography.heading,
-    fontSize: 18,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  input: {
-    ...typography.body,
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.sm,
-    color: colors.text,
-  },
-  categoryRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  categoryChip: {
-    backgroundColor: colors.background,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginRight: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  categoryChipActive: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
-  },
-  categoryText: {
-    ...typography.body,
-    color: colors.muted,
-    textTransform: 'capitalize',
-  },
-  categoryTextActive: {
-    color: colors.text,
-    fontWeight: '600',
-  },
-  submit: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  submitDisabled: {
-    opacity: 0.5,
-  },
-  submitText: {
-    ...typography.body,
-    color: colors.surface,
-    fontWeight: '600',
-  },
   sectionHeader: {
-    marginTop: spacing.lg,
     marginBottom: spacing.md,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   sectionTitle: {
     ...typography.heading,
@@ -228,7 +150,7 @@ const styles = StyleSheet.create({
     color: colors.muted,
   },
   listContent: {
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   emptyState: {
     marginTop: spacing.lg,
@@ -247,5 +169,27 @@ const styles = StyleSheet.create({
     ...typography.body,
     marginTop: spacing.xs,
     color: colors.muted,
+  },
+  fab: {
+    position: "absolute",
+    right: spacing.lg,
+    bottom: spacing.lg,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+  fabText: {
+    ...typography.heading,
+    fontSize: 30,
+    color: colors.text,
+    marginTop: -2,
   },
 });

@@ -6,8 +6,11 @@ import { CareTaskType, Plant, PlantCategory } from '../types';
 type PlantInput = {
   name: string;
   category: PlantCategory;
+  description?: string;
   room?: string;
   photoUri?: string;
+  waterAmount?: string;
+  waterDays?: string[];
 };
 
 export function createPlant(input: PlantInput): Plant {
@@ -15,9 +18,12 @@ export function createPlant(input: PlantInput): Plant {
   return {
     id: makeId(),
     name: input.name.trim(),
+    description: input.description?.trim() || undefined,
     category: input.category,
     room: input.room?.trim() || undefined,
     photoUri: input.photoUri,
+    waterAmount: input.waterAmount?.trim() || undefined,
+    waterDays: input.waterDays?.length ? input.waterDays : undefined,
     createdAt,
     schedules: buildSchedules(input.category),
   };

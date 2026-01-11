@@ -13,9 +13,14 @@ export type CareSchedule = {
 export type Plant = {
   id: string;
   name: string;
+  description?: string;
   category: PlantCategory;
   room?: string;
   photoUri?: string;
+  waterAmount?: string;
+  waterDays?: string[];
   createdAt: string;
   schedules: CareSchedule[];
 };
+
+export type PlantDraft = Omit<Plant, 'id' | 'createdAt' | 'schedules'>;
