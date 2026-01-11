@@ -3,19 +3,39 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
+    "prepush": "tsc --noEmit",
+    "tsc": "tsc",
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-navigation/bottom-tabs": "7.9.0",
+    "@react-navigation/native": "7.1.26",
+    "@react-navigation/native-stack": "7.9.0",
     "expo": "~54.0.31",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-mmkv": "^4.1.1",
+    "react-native-nitro-modules": "^0.32.1",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0"
   },
   "devDependencies": {
+    "@react-native/typescript-config": "^0.79.0",
     "@types/react": "~19.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "eslint": "8.57.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-jsdoc": "48.2.0",
+    "eslint-plugin-no-null": "1.0.2",
+    "eslint-plugin-react": "7.33.2",
+    "eslint-plugin-react-hooks": "4.6.2",
     "typescript": "~5.9.2"
   },
   "private": true
