@@ -1,10 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors } from '../theme/colors';
-import { spacing } from '../theme/spacing';
-import { typography } from '../theme/typography';
-import { Plant } from '../types';
-import { getNextDue } from '../utils/care';
+import { colors } from '@src/theme/colors';
+import { spacing } from '@src/theme/spacing';
+import { typography } from '@src/theme/typography';
+import { Plant } from '@src/types';
+import { getNextDue } from '@src/utils/care';
 
 type PlantCardProps = {
   plant: Plant;

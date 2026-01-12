@@ -16,9 +16,9 @@ import Animated, {
 } from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
 
-import { colors } from "../theme/colors";
-import { spacing } from "../theme/spacing";
-import { typography } from "../theme/typography";
+import { colors } from "@src/theme/colors";
+import { spacing } from "@src/theme/spacing";
+import { typography } from "@src/theme/typography";
 
 type OnboardingScreenProps = {
   onDone: () => void;

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { getOnboardingSeen, setOnboardingSeen } from '../storage/settings';
+import { getOnboardingSeen, setOnboardingSeen } from '@src/storage/settings';
 
 export function useOnboarding() {
   const [seen, setSeen] = useState(getOnboardingSeen());

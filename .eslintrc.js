@@ -17,6 +17,14 @@ module.exports = {
       version: 'detect',
     },
     'import/ignore': ['node_modules', 'react-native'],
+    'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
   },
   plugins: ['react', 'react-hooks', '@typescript-eslint', 'import', 'jsdoc', 'no-null'],
   extends: [

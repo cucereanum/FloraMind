@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { loadPlants } from '../storage/plants';
-import type { Plant, PlantDraft } from '../types';
-import { createPlant } from '../utils/plant';
+import { loadPlants } from '@src/storage/plants';
+import type { Plant, PlantDraft } from '@src/types';
+import { createPlant } from '@src/utils/plant';
 
 type PlantsState = {
   items: Plant[];

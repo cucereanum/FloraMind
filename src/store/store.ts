@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import plantsReducer from "./plantsSlice";
-import { savePlants } from "../storage/plants";
+import { savePlants } from "@src/storage/plants";
+import plantsReducer from "@src/store/plantsSlice";
 
 export const store = configureStore({
   reducer: {

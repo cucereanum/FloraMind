@@ -11,13 +11,13 @@ import {
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { HomeStackParamList } from "../navigation/RootNavigator";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { addPlant, updatePlant } from "../store/plantsSlice";
-import { colors } from "../theme/colors";
-import { spacing } from "../theme/spacing";
-import { typography } from "../theme/typography";
-import type { PlantDraft } from "../types";
+import { HomeStackParamList } from "@src/navigation/RootNavigator";
+import { useAppDispatch, useAppSelector } from "@src/store/hooks";
+import { addPlant, updatePlant } from "@src/store/plantsSlice";
+import { colors } from "@src/theme/colors";
+import { spacing } from "@src/theme/spacing";
+import { typography } from "@src/theme/typography";
+import type { PlantDraft } from "@src/types";
 
 type PlantDetailsProps = NativeStackScreenProps<
   HomeStackParamList,

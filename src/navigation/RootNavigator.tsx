@@ -3,13 +3,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { useOnboarding } from "../hooks/useOnboarding";
-import HomeScreen from "../screens/HomeScreen";
-import OnboardingScreen from "../screens/OnboardingScreen";
-import PlantDetailsScreen from "../screens/PlantDetailsScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import { colors } from "../theme/colors";
-import type { Plant } from "../types";
+import { useOnboarding } from "@src/hooks/useOnboarding";
+import HomeScreen from "@src/screens/HomeScreen";
+import OnboardingScreen from "@src/screens/OnboardingScreen";
+import PlantDetailsScreen from "@src/screens/PlantDetailsScreen";
+import SettingsScreen from "@src/screens/SettingsScreen";
+import { colors } from "@src/theme/colors";
+import type { Plant } from "@src/types";
 
 type RootStackParamList = {
   Onboarding: undefined;

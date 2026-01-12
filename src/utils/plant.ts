@@ -1,7 +1,7 @@
-import { nowIso } from './date';
-import { makeId } from './id';
-import { buildSchedules } from '../data/carePresets';
-import { CareTaskType, Plant, PlantCategory } from '../types';
+import { buildSchedules } from "@src/data/carePresets";
+import { CareTaskType, Plant, PlantCategory } from "@src/types";
+import { nowIso } from "@src/utils/date";
+import { makeId } from "@src/utils/id";
 
 type PlantInput = {
   name: string;
@@ -34,7 +34,9 @@ export function markTaskCompleted(plant: Plant, type: CareTaskType): Plant {
   return {
     ...plant,
     schedules: plant.schedules.map((schedule) =>
-      schedule.type === type ? { ...schedule, lastCompleted: completedAt } : schedule,
+      schedule.type === type
+        ? { ...schedule, lastCompleted: completedAt }
+        : schedule
     ),
   };
 }

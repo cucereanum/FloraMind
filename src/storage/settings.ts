@@ -1,4 +1,4 @@
-import { storage } from './mmkv';
+import { storage } from '@src/storage/mmkv';
 
 const ONBOARDING_KEY = 'floramind/onboarding/seen';
 

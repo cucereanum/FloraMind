@@ -1,4 +1,4 @@
-import { CareSchedule, PlantCategory } from '../types';
+import { CareSchedule, PlantCategory } from '@src/types';
 
 type CarePreset = {
   waterEvery: number;

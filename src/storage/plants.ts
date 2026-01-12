@@ -1,5 +1,5 @@
-import { storage } from './mmkv';
-import { Plant } from '../types';
+import { storage } from '@src/storage/mmkv';
+import { Plant } from '@src/types';
 
 const STORAGE_KEY = 'floramind/plants';
 

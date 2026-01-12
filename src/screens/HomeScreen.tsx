@@ -5,12 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import PlantCard from "../components/PlantCard";
-import { HomeStackParamList } from "../navigation/RootNavigator";
-import { useAppSelector } from "../store/hooks";
-import { colors } from "../theme/colors";
-import { spacing } from "../theme/spacing";
-import { typography } from "../theme/typography";
+import PlantCard from "@src/components/PlantCard";
+import { HomeStackParamList } from "@src/navigation/RootNavigator";
+import { useAppSelector } from "@src/store/hooks";
+import { colors } from "@src/theme/colors";
+import { spacing } from "@src/theme/spacing";
+import { typography } from "@src/theme/typography";
 
 type HomeScreenNavigation = NativeStackNavigationProp<
   HomeStackParamList,
