@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { useOnboarding } from "../hooks/useOnboarding";
@@ -9,7 +9,7 @@ import OnboardingScreen from "../screens/OnboardingScreen";
 import PlantDetailsScreen from "../screens/PlantDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { colors } from "../theme/colors";
-import type { Plant, PlantDraft } from "../types";
+import type { Plant } from "../types";
 
 type RootStackParamList = {
   Onboarding: undefined;
@@ -22,10 +22,8 @@ type TabsParamList = {
 };
 
 export type HomeStackParamList = {
-  HomeList:
-    | { action?: "create" | "update"; payload?: Plant | PlantDraft }
-    | undefined;
-  PlantDetails: { plant?: Plant } | undefined;
+  HomeList: undefined;
+  PlantDetails: { plantId?: Plant["id"] } | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,7 +32,10 @@ const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 function HomeStackScreen() {
   return (
-    <HomeStack.Navigator id="home-stack">
+    <HomeStack.Navigator
+      id="home-stack"
+      screenOptions={{ contentStyle: { backgroundColor: colors.background } }}
+    >
       <HomeStack.Screen
         name="HomeList"
         component={HomeScreen}
@@ -89,10 +90,25 @@ function MainTabs() {
 
 export default function RootNavigator() {
   const { seen, complete } = useOnboarding();
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.text,
+    },
+  };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator id="root-stack" screenOptions={{ headerShown: false }}>
+    <NavigationContainer theme={navigationTheme}>
+      <Stack.Navigator
+        id="root-stack"
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
         {!seen ? (
           <Stack.Screen name="Onboarding">
             {(props) => <OnboardingScreen {...props} onDone={complete} />}

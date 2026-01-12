@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   Pressable,
@@ -12,10 +12,12 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { HomeStackParamList } from "../navigation/RootNavigator";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { addPlant, updatePlant } from "../store/plantsSlice";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
 import { typography } from "../theme/typography";
-import type { Plant, PlantDraft } from "../types";
+import type { PlantDraft } from "../types";
 
 type PlantDetailsProps = NativeStackScreenProps<
   HomeStackParamList,
@@ -28,7 +30,11 @@ export default function PlantDetailsScreen({
   route,
   navigation,
 }: PlantDetailsProps) {
-  const existing = useMemo(() => route.params?.plant, [route.params]);
+  const dispatch = useAppDispatch();
+  const plantId = route.params?.plantId;
+  const existing = useAppSelector((state) =>
+    plantId ? state.plants.items.find((plant) => plant.id === plantId) : undefined,
+  );
 
   const [name, setName] = useState(existing?.name ?? "");
   const [description, setDescription] = useState(existing?.description ?? "");
@@ -54,15 +60,19 @@ export default function PlantDetailsScreen({
     }
 
     if (existing) {
-      const payload: Plant = {
-        ...existing,
-        name: name.trim(),
-        description: description.trim() || undefined,
-        photoUri: photoUri.trim() || undefined,
-        waterAmount: waterAmount.trim() || undefined,
-        waterDays,
-      };
-      navigation.navigate("HomeList", { action: "update", payload });
+      dispatch(
+        updatePlant({
+          id: existing.id,
+          updates: {
+            name: name.trim(),
+            description: description.trim() || undefined,
+            photoUri: photoUri.trim() || undefined,
+            waterAmount: waterAmount.trim() || undefined,
+            waterDays,
+          },
+        }),
+      );
+      navigation.goBack();
       return;
     }
 
@@ -75,7 +85,8 @@ export default function PlantDetailsScreen({
       waterDays,
       room: undefined,
     };
-    navigation.navigate("HomeList", { action: "create", payload });
+    dispatch(addPlant(payload));
+    navigation.goBack();
   };
 
   return (

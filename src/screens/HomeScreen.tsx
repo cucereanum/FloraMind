@@ -1,67 +1,27 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import PlantCard from "../components/PlantCard";
 import { HomeStackParamList } from "../navigation/RootNavigator";
-import { loadPlants, savePlants } from "../storage/plants";
+import { useAppSelector } from "../store/hooks";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
 import { typography } from "../theme/typography";
-import type { Plant, PlantDraft } from "../types";
-import { createPlant } from "../utils/plant";
 
 type HomeScreenNavigation = NativeStackNavigationProp<
   HomeStackParamList,
   "HomeList"
 >;
-type HomeRoute = RouteProp<HomeStackParamList, "HomeList">;
 
 export default function HomeScreen() {
-  const [plants, setPlants] = useState<Plant[]>(() => loadPlants());
+  const plants = useAppSelector((state) => state.plants.items);
   const navigation = useNavigation<HomeScreenNavigation>();
-  const route = useRoute<HomeRoute>();
 
   const headerMeta = useMemo(() => `${plants.length} total`, [plants.length]);
-
-  useEffect(() => {
-    savePlants(plants);
-  }, [plants]);
-
-  useEffect(() => {
-    const params = route.params as HomeStackParamList["HomeList"];
-    if (!params?.action || !params.payload) {
-      return;
-    }
-
-    if (params.action === "create") {
-      const draft = params.payload as PlantDraft;
-      const next = createPlant({
-        name: draft.name,
-        category: draft.category ?? "unknown",
-        description: draft.description,
-        room: draft.room,
-        photoUri: draft.photoUri,
-        waterAmount: draft.waterAmount,
-        waterDays: draft.waterDays,
-      });
-      setPlants((current) => [next, ...current]);
-    }
-
-    if (params.action === "update") {
-      const updated = params.payload as Plant;
-      setPlants((current) =>
-        current.map((plant) =>
-          plant.id === updated.id ? { ...plant, ...updated } : plant
-        )
-      );
-    }
-
-    navigation.setParams({ action: undefined, payload: undefined });
-  }, [navigation, route.params]);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -89,7 +49,7 @@ export default function HomeScreen() {
               <PlantCard
                 plant={item}
                 onPress={() =>
-                  navigation.navigate("PlantDetails", { plant: item })
+                  navigation.navigate("PlantDetails", { plantId: item.id })
                 }
               />
             )}
