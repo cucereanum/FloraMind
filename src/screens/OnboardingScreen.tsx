@@ -13,8 +13,8 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
   withTiming,
+  SharedValue,
 } from "react-native-reanimated";
-import type { SharedValue } from "react-native-reanimated";
 
 import { colors } from "@src/theme/colors";
 import { spacing } from "@src/theme/spacing";

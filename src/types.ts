@@ -2,6 +2,8 @@ export const plantCategories = ['succulent', 'tropical', 'fern', 'herb', 'unknow
 
 export type PlantCategory = (typeof plantCategories)[number];
 
+export type PlantStatus = "upcoming" | "forgot" | "history";
+
 export type CareTaskType = 'water' | 'fertilize';
 
 export type CareSchedule = {
@@ -19,6 +21,7 @@ export type Plant = {
   photoUri?: string;
   waterAmount?: string;
   waterDays?: string[];
+  status?: PlantStatus;
   createdAt: string;
   schedules: CareSchedule[];
 };

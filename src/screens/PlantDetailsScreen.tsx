@@ -11,7 +11,7 @@ import {
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { HomeStackParamList } from "@src/navigation/RootNavigator";
+import { HomeStackParamList } from "@src/navigation/types";
 import { useAppDispatch, useAppSelector } from "@src/store/hooks";
 import { addPlant, updatePlant } from "@src/store/plantsSlice";
 import { colors } from "@src/theme/colors";

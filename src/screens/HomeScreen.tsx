@@ -1,16 +1,19 @@
-import { useMemo } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import PlantCard from "@src/components/PlantCard";
-import { HomeStackParamList } from "@src/navigation/RootNavigator";
+import PlantFilter from "@src/components/PlantFilter";
+import { HomeStackParamList } from "@src/navigation/types";
 import { useAppSelector } from "@src/store/hooks";
 import { colors } from "@src/theme/colors";
 import { spacing } from "@src/theme/spacing";
 import { typography } from "@src/theme/typography";
+import type { PlantStatus } from "@src/types";
+import { getNextDue } from "@src/utils/care";
+import { startOfToday } from "@src/utils/date";
 
 type HomeScreenNavigation = NativeStackNavigationProp<
   HomeStackParamList,
@@ -20,64 +23,78 @@ type HomeScreenNavigation = NativeStackNavigationProp<
 export default function HomeScreen() {
   const plants = useAppSelector((state) => state.plants.items);
   const navigation = useNavigation<HomeScreenNavigation>();
+  const [filter, setFilter] = useState<PlantStatus>("upcoming");
 
-  const headerMeta = useMemo(() => `${plants.length} total`, [plants.length]);
+  const filteredPlants = useMemo(() => {
+    const today = startOfToday();
+    return plants.filter((plant) => {
+      const nextDue = getNextDue(plant);
+      const isOverdue = nextDue
+        ? nextDue.dueDate.getTime() < today.getTime()
+        : false;
+      const hasHistory = plant.schedules.some((schedule) =>
+        Boolean(schedule.lastCompleted)
+      );
+
+      if (filter === "history") {
+        return hasHistory;
+      }
+      if (filter === "forgot") {
+        return isOverdue;
+      }
+      return !isOverdue;
+    });
+  }, [filter, plants]);
+
+  const headerMeta = useMemo(
+    () => `${filteredPlants.length} total`,
+    [filteredPlants.length]
+  );
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>FloraMind</Text>
-          <Text style={styles.subtitle}>Your plants, calm and organized.</Text>
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Plant shelf</Text>
-          <Text style={styles.sectionMeta}>{headerMeta}</Text>
-        </View>
-
-        {plants.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No plants yet</Text>
-            <Text style={styles.emptyBody}>Tap + to add your first plant.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={plants}
-            keyExtractor={(plant) => plant.id}
-            renderItem={({ item }) => (
-              <PlantCard
-                plant={item}
-                onPress={() =>
-                  navigation.navigate("PlantDetails", { plantId: item.id })
-                }
-              />
-            )}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
-
-        <Pressable
-          style={styles.fab}
-          onPress={() => navigation.navigate("PlantDetails")}
-        >
-          <Text style={styles.fabText}>+</Text>
-        </Pressable>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>FloraMind</Text>
+        <Text style={styles.subtitle}>Your plants, calm and organized.</Text>
       </View>
-    </SafeAreaView>
+
+      <PlantFilter value={filter} onChange={setFilter} />
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Plant shelf</Text>
+        <Text style={styles.sectionMeta}>{headerMeta}</Text>
+      </View>
+
+      {filteredPlants.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>No plants yet</Text>
+          <Text style={styles.emptyBody}>Tap + to add your first plant.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredPlants}
+          keyExtractor={(plant) => plant.id}
+          renderItem={({ item }) => (
+            <PlantCard
+              plant={item}
+              onPress={() =>
+                navigation.navigate("PlantDetails", { plantId: item.id })
+              }
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   container: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
+    marginTop: spacing.lg,
   },
   header: {
     paddingTop: spacing.lg,
@@ -129,27 +146,5 @@ const styles = StyleSheet.create({
     ...typography.body,
     marginTop: spacing.xs,
     color: colors.muted,
-  },
-  fab: {
-    position: "absolute",
-    right: spacing.lg,
-    bottom: spacing.lg,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
-  },
-  fabText: {
-    ...typography.heading,
-    fontSize: 30,
-    color: colors.text,
-    marginTop: -2,
   },
 });
